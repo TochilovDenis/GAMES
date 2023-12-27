@@ -19,4 +19,7 @@
       <Filter>Файлы ресурсов</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Коментарии.txt" />
+  </ItemGroup>
 </Project>
