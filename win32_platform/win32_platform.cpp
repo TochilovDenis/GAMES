@@ -1,4 +1,4 @@
-#include <windows.h>
+п»ї#include <windows.h>
 
 bool running = true;
 
@@ -45,35 +45,56 @@ static LRESULT CALLBACK windowClick(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 	return result;
 };
 
-// точка входа в программу
+// С‚РѕС‡РєР° РІС…РѕРґР° РІ РїСЂРѕРіСЂР°РјРјСѓ
 int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) {
-	// Создаем Windows Class (окна):
+	// РЎРѕР·РґР°РµРј Windows Class (РѕРєРЅР°):
 	WNDCLASS WindowClass = {};
-	WindowClass.style = CS_HREDRAW | CS_VREDRAW ; // задаем когда будет перерысовываться окно
-	WindowClass.lpszClassName = TEXT("Game Window Class"); // газвание класса окно
-	WindowClass.lpfnWndProc = windowClick; // мы привязываем к классу функцию обработчик кликов по окну
+	WindowClass.style = CS_HREDRAW | CS_VREDRAW ; // Р·Р°РґР°РµРј РєРѕРіРґР° Р±СѓРґРµС‚ РїРµСЂРµСЂС‹СЃРѕРІС‹РІР°С‚СЊСЃСЏ РѕРєРЅРѕ
+	WindowClass.lpszClassName = TEXT("Game Window Class"); // РіР°Р·РІР°РЅРёРµ РєР»Р°СЃСЃР° РѕРєРЅРѕ
+	WindowClass.lpfnWndProc = windowClick; // РјС‹ РїСЂРёРІСЏР·С‹РІР°РµРј Рє РєР»Р°СЃСЃСѓ С„СѓРЅРєС†РёСЋ РѕР±СЂР°Р±РѕС‚С‡РёРє РєР»РёРєРѕРІ РїРѕ РѕРєРЅСѓ
 
-	// Зарегистрировать этот класс
-	RegisterClass(&WindowClass); // зарегистрировали класс в нашем приложении
+	// Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°С‚СЊ СЌС‚РѕС‚ РєР»Р°СЃСЃ
+	RegisterClass(&WindowClass); // Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°Р»Рё РєР»Р°СЃСЃ РІ РЅР°С€РµРј РїСЂРёР»РѕР¶РµРЅРёРё
 
-	// Создать окно
+	// РЎРѕР·РґР°С‚СЊ РѕРєРЅРѕ
 	HWND window = CreateWindow(WindowClass.lpszClassName, TEXT("Game Ping-Pong"), WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
 	HDC hdc = GetDC(window);
 
 	while (running)
 	{
-		//ввод
+		//РІРІРѕРґ
 		MSG message;
 		while (PeekMessage(&message, window, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&message);
 			DispatchMessage(&message);
 		}
-		//симуляция - процесс игры
+		//СЃРёРјСѓР»СЏС†РёСЏ - РїСЂРѕС†РµСЃСЃ РёРіСЂС‹
 
+		unsigned int* pixel = (unsigned int*)renderState.memory;
+		for (int y = 0; y < renderState.height; y++)
+		{
+			for (int x = 0; x < renderState.width; x++) {
+				*pixel++ = 0xff5500;
+			}
+		}
 
-		// Перерисовка. Функция StretchDIBits используется для копирования данных цвета
-		// для прямоугольника пикселей в изображении DIB, JPEG или PNG в указанный
-		// прямоугольник назначения.
+		// Р—Р°РґР°РЅРёРµ СЂРёСЃРѕРІР°С‚СЊ Р Р¤ С„Р»Р°Рі 
+		/*for (size_t y = 0; y < renderState.height; y++)
+		{
+			for (size_t x = 0; x < renderState.width; x++)
+			{
+				if (y * 3 < renderState.height)
+					*pixel++ = 0xe4181c;
+				else if (y * 3 < 2 * renderState.height)
+					*pixel++ = 0x1c3578;
+				else
+					*pixel++ = 0xffffff;
+			}
+		}*/
+
+		// РџРµСЂРµСЂРёСЃРѕРІРєР°. Р¤СѓРЅРєС†РёСЏ StretchDIBits РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РєРѕРїРёСЂРѕРІР°РЅРёСЏ РґР°РЅРЅС‹С… С†РІРµС‚Р°
+		// РґР»СЏ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР° РїРёРєСЃРµР»РµР№ РІ РёР·РѕР±СЂР°Р¶РµРЅРёРё DIB, JPEG РёР»Рё PNG РІ СѓРєР°Р·Р°РЅРЅС‹Р№
+		// РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє РЅР°Р·РЅР°С‡РµРЅРёСЏ.
 		StretchDIBits(hdc, 0, 0, renderState.width, renderState.height, 0, 0, renderState.width, renderState.height, renderState.memory, &renderState.bitmapinfo, DIB_RGB_COLORS, SRCCOPY);
 	}
 };
