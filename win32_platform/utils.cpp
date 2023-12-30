@@ -1,4 +1,4 @@
-typedef char s8;
+﻿typedef char s8;
 typedef unsigned char u8;
 typedef short s16;
 typedef unsigned short u16;

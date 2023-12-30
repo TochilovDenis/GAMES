@@ -1,4 +1,4 @@
-#define isDown(b) input->buttons[b].isDown
+﻿#define isDown(b) input->buttons[b].isDown
 #define pressed(b) (input->buttons[b].isDown && input->buttons[b].changed)
 #define released(b) (!input->buttons[b].isDown && input->buttons[b].changed)
 
