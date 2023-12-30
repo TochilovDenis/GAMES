@@ -55,3 +55,18 @@ left	    right
 
 	Этот код является базовым примером создания окна с использованием WinAPI в C++. 
 	Он может быть расширен для создания более сложных окон и приложений.
+
+	// на симуляцию
+	// Задание рисовать РФ флаг 
+		/*for (size_t y = 0; y < renderState.height; y++)
+		{
+			for (size_t x = 0; x < renderState.width; x++)
+			{
+				if (y * 3 < renderState.height)
+					*pixel++ = 0xe4181c;
+				else if (y * 3 < 2 * renderState.height)
+					*pixel++ = 0x1c3578;
+				else
+					*pixel++ = 0xffffff;
+			}
+		}*/

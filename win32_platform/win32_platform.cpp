@@ -1,16 +1,21 @@
-﻿#include <windows.h>
+﻿#include "utils.cpp"
+#include <iostream>
+#include <windows.h>
 
-bool running = true;
+globalVariable bool running = true;
 
 struct RenderState {
 	void* memory;
-	int width, height;
-
+	s32 width, height;
 	BITMAPINFO bitmapinfo;
 };
 
-RenderState renderState;
-static LRESULT CALLBACK windowClick(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+globalVariable RenderState renderState;
+#include "platfom_common.cpp"
+#include "renderer.cpp"
+#include "game.cpp"
+
+LRESULT CALLBACK windowClick(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	LRESULT result = 0;
 
 	switch (uMsg) {
@@ -36,7 +41,6 @@ static LRESULT CALLBACK windowClick(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 			renderState.bitmapinfo.bmiHeader.biPlanes = 1;
 			renderState.bitmapinfo.bmiHeader.biBitCount = 32;
 			renderState.bitmapinfo.bmiHeader.biCompression = BI_RGB;
-
 		} break;
 		default: {
 			result = DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -60,41 +64,52 @@ int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int n
 	HWND window = CreateWindow(WindowClass.lpszClassName, TEXT("Game Ping-Pong"), WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, 0, 0, hInstance, 0);
 	HDC hdc = GetDC(window);
 
+	Input input = {};
+
 	while (running)
 	{
 		//ввод
 		MSG message;
+
+		for (size_t i = 0; i < BUTTON_COUNT; i++)
+		{
+			input.buttons[i].changed = false;
+		}
 		while (PeekMessage(&message, window, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&message);
-			DispatchMessage(&message);
-		}
-		//симуляция - процесс игры
 
-		unsigned int* pixel = (unsigned int*)renderState.memory;
-		for (int y = 0; y < renderState.height; y++)
-		{
-			for (int x = 0; x < renderState.width; x++) {
-				*pixel++ = 0xff5500;
-			}
-		}
-
-		// Задание рисовать РФ флаг 
-		/*for (size_t y = 0; y < renderState.height; y++)
-		{
-			for (size_t x = 0; x < renderState.width; x++)
+			switch (message.message)
 			{
-				if (y * 3 < renderState.height)
-					*pixel++ = 0xe4181c;
-				else if (y * 3 < 2 * renderState.height)
-					*pixel++ = 0x1c3578;
-				else
-					*pixel++ = 0xffffff;
-			}
-		}*/
+			case WM_KEYUP:
+			case WM_KEYDOWN: {
+				u32 vkCode = (u32)message.wParam;
+				bool isDown = ((message.lParam & (1 << 31)) == 0);
 
+#define processButton(b, vk)\
+case vk: {\
+	input.buttons[b].isDown = true;\
+	input.buttons[b].changed = true;\
+}break;
+
+				switch (vkCode) {
+					processButton(BUTTON_UP, VK_UP);
+					processButton(BUTTON_DOWN, VK_DOWN);
+					processButton(BUTTON_LEFT, VK_LEFT);
+					processButton(BUTTON_RIGHT, VK_RIGHT);
+				}
+			}break;
+			default:{
+				TranslateMessage(&message);
+				DispatchMessage(&message);
+			}
+		}
+	}
+		//симуляция - процесс игры
+		simulateGame(&input);
+		
 		// Перерисовка. Функция StretchDIBits используется для копирования данных цвета
 		// для прямоугольника пикселей в изображении DIB, JPEG или PNG в указанный
 		// прямоугольник назначения.
 		StretchDIBits(hdc, 0, 0, renderState.width, renderState.height, 0, 0, renderState.width, renderState.height, renderState.memory, &renderState.bitmapinfo, DIB_RGB_COLORS, SRCCOPY);
 	}
 };
+
