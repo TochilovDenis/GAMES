@@ -1,4 +1,4 @@
-internalVarible void clearScreen(u32 color) {
+ï»¿internalVarible void clearScreen(u32 color) {
 	u32* pixel = (u32*)renderState.memory;
 	for (size_t y = 0; y < renderState.height; y++)
 	{
@@ -35,12 +35,11 @@ internalVarible void drawRectangle(float x, float y, float halfSizeX, float half
 	x += renderState.width / 2.f;
 	y += renderState.height / 2.f;
 
-	// ìåíÿåì çíà÷åíèå êîîðäèíàò
+	// Ð¼ÐµÐ½ÑÐµÐ¼ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚
 	int x0 = x - halfSizeX;
 	int x1 = x + halfSizeX;
 	int y0 = y - halfSizeY;
 	int y1 = y + halfSizeY;
-
-	// ðèñóåì ïðÿìîóãîëüíèê
+	// Ñ€Ð¸ÑÑƒÐµÐ¼ Ð¿Ñ€ÑÐ¼Ð¾ÑƒÐ³Ð¾Ð»ÑŒÐ½Ð¸Ðº
 	drawRectangleInPixels(x0, y0, x1, y1, color);
 }
